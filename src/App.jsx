@@ -1,4 +1,4 @@
-import { BrowserRouter,Routes,Route,Navigate,NavLink} from 'react-router-dom';
+import { BrowserRouter,Routes,Route,Navigate,NavLink, Outlet} from 'react-router-dom';
 import { useState } from 'react';
 const Navigation=()=>{
   return (
@@ -40,7 +40,7 @@ const ProtectedRoute=({user,redirectPath="/",children})=>{
   if(!user){
     return <Navigate to={redirectPath} replace/>
   }
-  return children;
+  return <Outlet />;
 }
 const App=()=>{
   const [user,setUser]=useState(null);
@@ -59,17 +59,10 @@ const App=()=>{
     )}
      <Routes>
        <Route path="/" element={<Landing />} />
-       <Route path="/home" element={
-        <ProtectedRoute user={user}>
-          <Home user={user} />
-        </ProtectedRoute>
-       } 
-       />
-       <Route path="/dashboard" element={
-        <ProtectedRoute user={user} >
-          <Dashboard />
-        </ProtectedRoute>
-       } />
+       <Route element={<ProtectedRoute user={user}/>}>
+          <Route path="/home" element={<Home user={user} />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+      </Route>
        <Route path="analytics" element={<Analytics />} />
        <Route path="admin" element={<Admin />} />
        <Route path="*" element={<NotFound />} />
