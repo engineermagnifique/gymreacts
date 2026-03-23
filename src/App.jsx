@@ -1,38 +1,68 @@
-import { BrowserRouter, NavLink} from 'react-router-dom';
-
-const Home=()=>{
+import { BrowserRouter,Routes,Route,Navigate,NavLink} from 'react-router-dom';
+import { useState } from 'react';
+const Navigation=()=>{
   return (
-  <div>
-    <h1>Home Page</h1>
-  </div>
-  )
-}
-const About=()=>{
-  return (
-  <div>
-    <h1>About Page</h1>
-  </div>
+    <nav style={{padding:'6px'}}>
+      <NavLink style={{padding:'4px'}} to="/">Landing</NavLink>
+      <NavLink style={{padding:'4px'}} to="/home">Home</NavLink>
+      <NavLink style={{padding:'4px'}} to="/dashboard">Dashboard</NavLink>
+      <NavLink style={{padding:'4px'}} to="/analytics">Analytics</NavLink>
+      <NavLink style={{padding:'4px'}} to="/admin">Admin</NavLink>
+    </nav>
   )
 }
 
-const navLinkStyle=({isActive})=>({
-    color:isActive?'red':'blue',
-    textDecoration:isActive?'underline':'none'
-  })
+const Landing=()=>{
+  return <h1>Landing Page any one</h1>
+}
+
+const Home=({user})=>{
+  if(!user){
+    return <Navigate to='/' replace/>
+  }
+  return <h1>Home Page any one can access it</h1>
+}
+
+const Dashboard=()=>{
+  return <h1>Dashboard Page protected</h1>
+}
+
+const Analytics=()=>{
+  return <h1>Analytics Page protected</h1>
+}
+
+const Admin=()=>{
+  return <h1>Admin Page protected</h1>
+}
+
+const NotFound=()=>{
+  return <h1>404 Not Found</h1>
+}
 const App=()=>{
+  const [user,setUser]=useState(null);
+  const handleLogin=()=>setUser({name:'John Doe',role:'admin'});
+  const handleLogout=()=>setUser(null);
   return (
-    <div>
-      <BrowserRouter>
-       <nav style={{display:'flex',gap:'20px'}}>
-         <NavLink to="/" style={navLinkStyle}>Home</NavLink>
-         <NavLink to="/about" style={navLinkStyle}>About</NavLink>
-       </nav>
-       <Routes>
-        <Route path="/" element={<Home/>}/>
-        <Route path="/about" element={<About/>}/>
-       </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+    <Navigation />
+    {user ? (
+      <>
+       <p>Welcome again Mr {user.name} who is {user.role}</p>
+       <button onClick={handleLogout}>Logout</button>
+      </>
+    ):(
+        <button onClick={handleLogin}>Login</button>
+    )}
+     <Routes>
+       <Route path="/" element={<Landing />} />
+       <Route path="/home" element={<Home user={user}/>} />
+       <Route path="/dashboard" element={<Dashboard />} />
+       <Route path="analytics" element={<Analytics />} />
+       <Route path="admin" element={<Admin />} />
+       <Route path="*" element={<NotFound />} />
+     </Routes>
+    </BrowserRouter>
   )
 }
+
 export default App;
