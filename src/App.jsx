@@ -17,9 +17,6 @@ const Landing=()=>{
 }
 
 const Home=({user})=>{
-  if(!user){
-    return <Navigate to='/' replace/>
-  }
   return <h1>Home Page any one can access it</h1>
 }
 
@@ -38,6 +35,13 @@ const Admin=()=>{
 const NotFound=()=>{
   return <h1>404 Not Found</h1>
 }
+
+const ProtectedRoute=({user,redirectPath="/",children})=>{
+  if(!user){
+    return <Navigate to={redirectPath} replace/>
+  }
+  return children;
+}
 const App=()=>{
   const [user,setUser]=useState(null);
   const handleLogin=()=>setUser({name:'John Doe',role:'admin'});
@@ -55,8 +59,17 @@ const App=()=>{
     )}
      <Routes>
        <Route path="/" element={<Landing />} />
-       <Route path="/home" element={<Home user={user}/>} />
-       <Route path="/dashboard" element={<Dashboard />} />
+       <Route path="/home" element={
+        <ProtectedRoute user={user}>
+          <Home user={user} />
+        </ProtectedRoute>
+       } 
+       />
+       <Route path="/dashboard" element={
+        <ProtectedRoute user={user} >
+          <Dashboard />
+        </ProtectedRoute>
+       } />
        <Route path="analytics" element={<Analytics />} />
        <Route path="admin" element={<Admin />} />
        <Route path="*" element={<NotFound />} />
